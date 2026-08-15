@@ -1,0 +1,9 @@
+services:
+  app-web:
+    image: juancrespo25/app-web
+    container_name: app-web
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+    ports:
+      - "5174:80"
+    restart: unless-stopped

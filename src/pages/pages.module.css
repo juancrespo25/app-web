@@ -1,0 +1,262 @@
+/* ================================================================
+   pages.module.css — estilos de Layout y NotFoundPage
+   ================================================================ */
+
+/* ── Layout: contenedor raíz ─────────────────────────────────── */
+.wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Cabecera ────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  height: calc(3.5rem + 30px);    /* 56px + 30px = 86px */
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;  /* gray-200 */
+  padding: 0 1rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  z-index: 20;
+
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.headerLogoWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerLogoImg {
+  height: 2.5rem;
+  width: auto;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.headerSeparator {
+  display: none;
+  height: 1.5rem;
+  width: 10px;
+  background-color: #fbfbfc;   /* gray-700 */
+}
+
+@media (min-width: 768px) {
+  .headerSeparator { display: block; }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerBellBtn {
+  position: relative;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: #6b7280;           /* gray-500 */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  margin-top: 10px;
+}
+
+.headerBellBtn:hover {
+  background-color: #f3f4f6;  /* gray-100 */
+  color: #111827;              /* gray-900 */
+}
+
+.headerBellDot {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.375rem;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 9999px;
+  background-color: #081261;  /* red-500 */
+}
+
+.headerDividerSmall {
+  height: 1.5rem;
+  width: 1px;
+  background-color: #e5e7eb;  /* gray-200 */
+}
+
+.headerUser {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.headerUser:hover {
+  background-color: #f3f4f6;  /* gray-100 */
+}
+
+.headerUserAvatar {
+  display: flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: #100b58;  /* red-600 */
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.headerUserInfo {
+  display: none;
+  text-align: left;
+}
+
+@media (min-width: 640px) {
+  .headerUserInfo { display: block; }
+}
+
+.headerUserName {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #111827;   /* gray-900 */
+  line-height: 1.25;
+  margin: 0;
+}
+
+.headerUserEmail {
+  font-size: 0.75rem;
+  color: #6b7280;   /* gray-500 */
+  line-height: 1.25;
+  margin: 0;
+}
+
+.headerChevron {
+  display: none;
+  height: 0.75rem;
+  width: 0.75rem;
+  color: #0a0b43;   /* gray-400 */
+}
+
+@media (min-width: 640px) {
+  .headerChevron { display: block; }
+}
+
+/* ── Cuerpo (sidebar + contenido) ────────────────────────────── */
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.triggerWrap {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-start;
+  padding-top: 0.75rem;
+}
+
+.main {
+  flex: 1;
+  overflow: auto;
+  background-color: #edebeb;  /* gray-100 */
+  padding: 1.5rem;
+}
+
+/* ── Pie de página ───────────────────────────────────────────── */
+.footer {
+  flex-shrink: 0;
+  background-color: #111827;  /* gray-900 */
+  padding: 0.5rem 1.5rem;
+  z-index: 20;
+}
+
+.footerInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #9ca3af;   /* gray-400 */
+}
+
+.footerIconWrap {
+  display: flex;
+  height: 1rem;
+  width: 1rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  background-color: #dc2626;  /* red-600 */
+}
+
+.footerBrand {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* ================================================================
+   NotFoundPage
+   ================================================================ */
+.nfContainer {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb;  /* gray-50 */
+}
+
+.nfCode {
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: #dc2626;   /* red-600 — color institucional */
+  line-height: 1;
+  margin: 0;
+}
+
+.nfTitle {
+  margin-top: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;   /* gray-800 */
+}
+
+.nfSubtitle {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;   /* gray-500 */
+}
+
+.nfLink {
+  display: inline-block;
+  margin-top: 1.5rem;
+  border-radius: 0.5rem;
+  background-color: #dc2626;  /* red-600 — color institucional */
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+.nfLink:hover {
+  background-color: #b91c1c;  /* red-700 */
+}
