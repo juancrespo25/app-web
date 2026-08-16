@@ -1,0 +1,75 @@
+name: Build-push-deploy
+
+on:
+  push:
+    branches: [main]
+
+env:
+  IMAGE_NAME: juancrespo25/app-web
+  VPS_PATH: /var/docker-file/sistema/app/web-app
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.vars.outputs.sha_short }}
+    steps:
+      - name: Checkout codigo
+        uses: actions/checkout@v4
+
+      - name: Definir el tag corto del commit
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login en Docker hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build y push de la imagem
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.sha_short }}
+            ${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy al VPS por SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd ${{ env.VPS_PATH }}
+
+            # Generar/actualizar .env con la variable y el tag de la imagen a desplegar
+            cat > .env <<EOF
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
+            IMAGE_TAG=${{ needs.build-and-push.outputs.image_tag }}
+            EOF
+
+            docker compose -p system pull
+            docker compose -p system up -d
+
+            # Limpieza de imágenes viejas sin usar (mantiene espacio libre)
+            docker image prune -f
+
+
+
+
+

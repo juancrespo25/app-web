@@ -39,11 +39,6 @@ const ManifiestoPage = () => {
       .catch((err) => console.error("Error cargando couriers:", err));
   }, []);
 
-  useEffect(() => {
-    handleConsultar();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const [isLoading, setIsLoading] = useState(false);
   const [manifiestos, setManifiestos] = useState<getAllManifiestoResponseDetail[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -69,6 +64,11 @@ const ManifiestoPage = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    handleConsultar();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="p-8 bg-[#fcfcfc] min-h-full">

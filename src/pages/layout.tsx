@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useMemo, useEffect } from "react"
+import { useEffect } from "react"
 import { Outlet, Navigate, useNavigate } from "react-router-dom"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/modules/common/components/app-sidebar"
@@ -17,11 +17,10 @@ export default function Layout() {
   }
 
   // Extraer información del usuario desde el token de forma segura
-  const userData = useMemo(() => {
+  const userData = (() => {
     try {
       if (!token) return null
 
-      // El JWT tiene 3 partes separadas por puntos. La segunda es el payload.
       const base64Url = token.split(".")[1]
       if (!base64Url) return null
 
@@ -38,13 +37,13 @@ export default function Layout() {
         name: payload.nombres,
         lastName: payload.apellidos,
         email: payload.email || "sin@correo.com",
-        codigo: payload.codigo
+        codigo: payload.codigo,
       }
     } catch (error) {
       console.error("Error al decodificar el token:", error)
       return null
     }
-  }, [token])
+  })()
 
   useEffect(() => {
     if (userData?.codigo) {

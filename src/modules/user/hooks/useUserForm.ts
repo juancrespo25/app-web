@@ -30,7 +30,6 @@ export const useUserForm = (initialData: UserFormData | UserUpdate | null | unde
     area.trim() !== '' &&
     isPhoneValid;
 
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (isOpen && !initialData) {
       // Resetear campos cuando se abre el modal para nuevo usuario
