@@ -4,7 +4,7 @@ FROM node:22.18.0-alpine AS builder
 WORKDIR /app
 
 # Habilitar pnpm vía corepack (viene con Node)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@11.21.0 --activate
 
 # Copiar solo los manifests primero (mejor cache de capas)
 COPY package.json pnpm-lock.yaml ./
