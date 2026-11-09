@@ -1,3 +1,8 @@
+export interface DocumentoAdjunto {
+    numero: string;
+    tipo: number;
+}
+
 export interface GuiaOrden {
     id_guia: number;
     item: number;
@@ -16,6 +21,7 @@ export interface GuiaOrden {
     observaciones: string;
     estado: string;
     digitalizado: boolean;
+    docadjuntos?: DocumentoAdjunto[];
 }
 
 export interface Guia {
@@ -40,6 +46,7 @@ export interface Guia {
     userCreated: string;
     customer: string;
     ccosto: string;
+    docadjuntos: DocumentoAdjunto[];
 }
 
 export interface ValidateGuia {

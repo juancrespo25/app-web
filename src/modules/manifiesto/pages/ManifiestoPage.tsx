@@ -257,7 +257,7 @@ const ManifiestoPage = () => {
                 MT
               </TableHead>
               <TableHead className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">
-                RE
+                RT
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -321,6 +321,21 @@ const ManifiestoPage = () => {
         </Table>
       </div>
 
+      <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border border-red-200 bg-white px-4 py-3 text-xs border-l-4 border-l-red-600 shadow-sm">
+        <span className="text-slate-700 font-bold">
+          <span className="mr-1 rounded bg-red-600 px-2 py-0.5 font-bold text-white">PD</span> Pendiente
+        </span>
+        <span className="text-slate-700 font-bold">
+          <span className="mr-1 rounded bg-red-600 px-2 py-0.5 font-bold text-white">EF</span> Entregado
+        </span>
+        <span className="text-slate-700 font-bold">
+          <span className="mr-1 rounded bg-red-600 px-2 py-0.5 font-bold text-white">MT</span> Motivado
+        </span>
+        <span className="text-slate-700 font-bold">
+          <span className="mr-1 rounded bg-red-600 px-2 py-0.5 font-bold text-white">RT</span> Retorno
+        </span>
+      </div>
+
       <ManifiestoForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
@@ -329,6 +344,7 @@ const ManifiestoPage = () => {
       <ManifiestoDescargaForm
         isOpen={isDescargaOpen}
         onClose={() => setIsDescargaOpen(false)}
+        onSaved={handleConsultar}
       />
 
     </div>

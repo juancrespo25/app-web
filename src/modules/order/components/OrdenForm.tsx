@@ -1,4 +1,4 @@
-﻿import { useEffect } from "react";
+﻿import { useCallback, useEffect, useRef, useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UbigeoFrom } from "@/modules/ubigeo/UbigeoFrom";
 import { useOrdenForm } from "../hooks/useOrdenForm";
+import DocumentosAdjuntos from "./DocumentosAdjuntos";
 import { MapPin, ClipboardList, Package } from "lucide-react";
 import type { UbigeoItem } from "@/modules/ubigeo/types/ubigeo.type";
 
@@ -23,7 +24,15 @@ interface OrdenFormProps {
 
 export default function OrdenForm({ isOpen, onClose, onSaved }: OrdenFormProps) {
 
+    const focusDestinatarioOnConfirmClose = useRef(false);
+    const [documentosVersion, setDocumentosVersion] = useState(0);
+    const handleSaved = useCallback(() => {
+        setDocumentosVersion((version) => version + 1);
+        onSaved?.();
+    }, [onSaved]);
     const {
+        documentos,
+        setDocumentos,
         isLoadingCustomers,
         selectedCustomer,
         filteredCustomers,
@@ -103,7 +112,7 @@ export default function OrdenForm({ isOpen, onClose, onSaved }: OrdenFormProps) 
         saveSuccess,
         isOrdenFormValid,
         handleSaveOrden,
-    } = useOrdenForm(onSaved);
+    } = useOrdenForm(handleSaved);
 
     const handleUbigeoSelect = (item: UbigeoItem) => {
         setSelectedOrigen(item.codigo.trim());
@@ -131,7 +140,16 @@ export default function OrdenForm({ isOpen, onClose, onSaved }: OrdenFormProps) 
         <>
             {/* Diálogo de confirmación orden existente */}
             <Dialog open={showOrdenConfirm} onOpenChange={(open) => !open && setShowOrdenConfirm(false)}>
-                <DialogContent className="max-w-sm rounded-2xl p-6 bg-white">
+                <DialogContent
+                    className="max-w-sm rounded-2xl p-6 bg-white"
+                    onCloseAutoFocus={(event) => {
+                        if (focusDestinatarioOnConfirmClose.current) {
+                            focusDestinatarioOnConfirmClose.current = false;
+                            event.preventDefault();
+                            destinatarioInputRef.current?.focus();
+                        }
+                    }}
+                >
                     <DialogTitle className="text-base font-bold text-slate-800">
                         Orden encontrada
                     </DialogTitle>
@@ -150,7 +168,10 @@ export default function OrdenForm({ isOpen, onClose, onSaved }: OrdenFormProps) 
                         <Button
                             variant="ghost"
                             className="rounded-xl bg-red-600! text-white hover:bg-red-700! min-w-32.5 px-6"
-                            onClick={handleConfirmOrden}
+                            onClick={() => {
+                                focusDestinatarioOnConfirmClose.current = true;
+                                void handleConfirmOrden();
+                            }}
                         >
                             Sí, agregar
                         </Button>
@@ -608,7 +629,14 @@ export default function OrdenForm({ isOpen, onClose, onSaved }: OrdenFormProps) 
                                                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); grabarButtonRef.current?.focus(); } }}
                                                 placeholder="Ingrese las observaciones"
                                                 className="flex-1 resize-none rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-red-600 focus:ring-4 focus:ring-red-600/10"
-                                            /></div>{/* fin fila 5 */}
+                                            />
+                                            <DocumentosAdjuntos
+                                                key={documentosVersion}
+                                                documentos={documentos}
+                                                setDocumentos={setDocumentos}
+                                                disabled={isSaving}
+                                            />
+                                        </div>{/* fin fila 5 */}
 
                                         <div className="flex justify-end items-center gap-3 border-t border-zinc-200 pt-4">
                                             {saveSuccess && (

@@ -134,29 +134,46 @@ export default function OrdenMasivaForm({ isOpen, onClose, onSaved }: OrdenMasiv
 
     const handleSaveMasiva = async () => {
         if (!isMasivaFormValid) return;
-        setIsSaving(true);
         setSaveError(null);
         setSaveSuccess(false);
+        const filaInvalida = csvRows.findIndex((row) => {
+            const tipo = (row[13] ?? '').trim();
+            const numero = (row[14] ?? '').trim();
+            return (tipo !== '' || numero !== '') && (!/^[1-6]$/.test(tipo) || !numero);
+        });
+        if (filaInvalida !== -1) {
+            setSaveError(`Fila ${filaInvalida + 1}: ingrese un tipo de documento del 1 al 6 y su número, o deje ambos campos vacíos.`);
+            return;
+        }
+
+        setIsSaving(true);
         try {
-            const guias: GuiaOrden[] = csvRows.map((row) => ({
-                id_guia: Number(`${numeroOrden}${row[12] ?? ''}`),
-                item: Number(row[12] ?? 0),
-                empresa: row[0] ?? '',
-                destinatario: 0,
-                destinatario_name: row[1] ?? '',
-                direccion: row[2] ?? '',
-                tarifa: Number(row[4] ?? 0),
-                peso: Number(row[7] ?? 0),
-                bultos: Number(row[8] ?? 0),
-                unidades: Number(row[9] ?? 0),
-                origen: selectedOrigen,
-                destino: row[5] ?? '',
-                tenvio: Number(row[6] ?? 0),
-                contenido: row[3] ?? '',
-                observaciones: row[11] ?? '',
-                estado: 'PD',
-                digitalizado: false,
-            }));
+            const guias: GuiaOrden[] = csvRows.map((row) => {
+                const tipoDocumento = (row[13] ?? '').trim();
+                const numeroDocumento = (row[14] ?? '').trim();
+                return {
+                    id_guia: Number(`${numeroOrden}${row[12] ?? ''}`),
+                    item: Number(row[12] ?? 0),
+                    empresa: row[0] ?? '',
+                    destinatario: 0,
+                    destinatario_name: row[1] ?? '',
+                    direccion: row[2] ?? '',
+                    tarifa: Number(row[4] ?? 0),
+                    peso: Number(row[7] ?? 0),
+                    bultos: Number(row[8] ?? 0),
+                    unidades: Number(row[9] ?? 0),
+                    origen: selectedOrigen,
+                    destino: row[5] ?? '',
+                    tenvio: Number(row[6] ?? 0),
+                    contenido: row[3] ?? '',
+                    observaciones: row[11] ?? '',
+                    estado: 'PD',
+                    digitalizado: false,
+                    docadjuntos: tipoDocumento
+                        ? [{ numero: numeroDocumento, tipo: Number(tipoDocumento) }]
+                        : [],
+                };
+            });
             await saveOrden({
                 numero: Number(numeroOrden),
                 customer: selectedCustomer,

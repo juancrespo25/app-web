@@ -35,9 +35,10 @@ interface DescargaRow {
 interface ManifiestoDescargaFormProps {
     isOpen: boolean;
     onClose: () => void;
+    onSaved?: () => void;
 }
 
-export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDescargaFormProps) {
+export default function ManifiestoDescargaForm({ isOpen, onClose, onSaved }: ManifiestoDescargaFormProps) {
     const [manifiesto, setManifiesto] = useState("");
     const [courier, setCourier] = useState("");
     const [zona, setZona] = useState("");
@@ -65,12 +66,16 @@ export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDe
         return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
     });
     const [isSearching, setIsSearching] = useState(false);
+    const [isGuiaSearchOpen, setIsGuiaSearchOpen] = useState(false);
+    const [guiaBusqueda, setGuiaBusqueda] = useState("");
+    const [isSearchingGuia, setIsSearchingGuia] = useState(false);
     const [guiaInput, setGuiaInput] = useState("");
     const [isValidating, setIsValidating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [rows, setRows] = useState<DescargaRow[]>([]);
     const manifiestoInputRef = useRef<HTMLInputElement>(null);
     const guiaInputRef = useRef<HTMLInputElement>(null);
+    const loadedManifiestoRef = useRef("");
 
     useEffect(() => {
         getAllParentesco(true)
@@ -114,6 +119,9 @@ export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDe
         setDevolucion("");
         setGuiaInput("");
         setRows([]);
+        setIsGuiaSearchOpen(false);
+        setGuiaBusqueda("");
+        loadedManifiestoRef.current = "";
         setTimeout(() => manifiestoInputRef.current?.focus(), 100);
     }, [isOpen]);
 
@@ -124,6 +132,10 @@ export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDe
         if (!guiaNum) return;
         if (!estado) {
             toast.warning("Seleccione un estado antes de validar la guía.");
+            return;
+        }
+        if (!loadedManifiestoRef.current || manifiesto !== loadedManifiestoRef.current) {
+            toast.warning("Busque el manifiesto antes de agregar guías.");
             return;
         }
         setIsValidating(true);
@@ -184,6 +196,7 @@ export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDe
         setDevolucion("");
         setGuiaInput("");
         setRows([]);
+        loadedManifiestoRef.current = "";
         setTimeout(() => manifiestoInputRef.current?.focus(), 50);
     };
 
@@ -216,6 +229,7 @@ export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDe
             });
             toast.success("Manifiesto grabado correctamente.");
             resetForm();
+            onSaved?.();
         } catch {
             toast.error("Error al grabar el manifiesto.");
         } finally {
@@ -223,26 +237,68 @@ export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDe
         }
     };
 
-    const handleBuscar = async () => {
-        if (!manifiesto.trim()) return;
+    const handleBuscar = async (codigo: string = manifiesto, focusInput = true) => {
+        if (!codigo.trim()) return false;
+        if (rows.length > 0 && loadedManifiestoRef.current !== codigo) {
+            toast.warning("Grabe las guías pendientes antes de buscar otro manifiesto.");
+            setManifiesto(loadedManifiestoRef.current);
+            return false;
+        }
         setIsSearching(true);
         try {
-            const result = await getByIdManifiesto(Number(manifiesto));
+            const result = await getByIdManifiesto(Number(codigo));
             if (!result) {
                 toast.error("Manifiesto no encontrado.");
-                return;
+                return false;
             }
             setCourier(result.nombre_courier);
             setManifiesto(result.codigo);
+            loadedManifiestoRef.current = result.codigo;
             setZona(result.zona_name);
             setFecha(new Date(result.createdAt).toLocaleDateString("es-PE"));
             setTotal(String(result.total));
             setPendientes(String(result.total_pendientes));
+            return true;
         } catch {
             toast.error("Error al buscar el manifiesto.");
+            return false;
         } finally {
             setIsSearching(false);
-            setTimeout(() => manifiestoInputRef.current?.focus(), 50);
+            if (focusInput) setTimeout(() => manifiestoInputRef.current?.focus(), 50);
+        }
+    };
+
+    const handleBuscarPorGuia = async () => {
+        const numero = Number(guiaBusqueda);
+        if (!/^\d+$/.test(guiaBusqueda) || !Number.isSafeInteger(numero) || numero <= 0) {
+            toast.error("Ingrese un número de guía válido.");
+            return;
+        }
+
+        setIsSearchingGuia(true);
+        try {
+            const result = await validateGuiaManifiesto(numero);
+            if (!result.success || !result.data) {
+                toast.error(result.message || "No se encontró la guía.");
+                return;
+            }
+            if (result.data.estado !== "ER") {
+                toast.error(`La guía no está disponible para descarga. Estado: ${result.data.estado}.`);
+                return;
+            }
+            const codigo = String(result.data.manifiesto ?? "").trim();
+            if (!/^\d+$/.test(codigo) || !Number.isSafeInteger(Number(codigo)) || Number(codigo) <= 0) {
+                toast.error("La guía no tiene un número de manifiesto válido.");
+                return;
+            }
+            if (await handleBuscar(codigo, false)) {
+                setIsGuiaSearchOpen(false);
+            }
+        } catch (error) {
+            console.error("Error al buscar el manifiesto por guía:", error);
+            toast.error("Error al validar la guía.");
+        } finally {
+            setIsSearchingGuia(false);
         }
     };
 
@@ -282,7 +338,7 @@ export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDe
                                                 value={manifiesto}
                                                 inputMode="numeric"
                                                 onChange={(e) => setManifiesto(e.target.value.replace(/\D/g, ""))}
-                                                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleBuscar(); } }}
+                                                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void handleBuscar(); } }}
                                                 placeholder="N° manifiesto"
                                                 disabled={isSearching}
                                                 className="flex-1 rounded-xl border-zinc-200 bg-white text-sm text-slate-700 focus:border-red-600 focus:ring-4 focus:ring-red-600/10 disabled:opacity-60"
@@ -290,8 +346,9 @@ export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDe
                                             <button
                                                 type="button"
                                                 title="Búsqueda por guía"
-                                                onClick={handleBuscar}
-                                                disabled={!manifiesto.trim() || isSearching}
+                                                aria-label="Búsqueda por guía"
+                                                onClick={() => { setGuiaBusqueda(""); setIsGuiaSearchOpen(true); }}
+                                                disabled={isSearching || isSaving || isValidating}
                                                 className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                                             >
                                                 <Search className="h-4 w-4" />
@@ -619,6 +676,49 @@ export default function ManifiestoDescargaForm({ isOpen, onClose }: ManifiestoDe
                 </div>
 
             </DialogContent>
+            <Dialog
+                open={isGuiaSearchOpen}
+                onOpenChange={(open) => {
+                    if (!isSearchingGuia) setIsGuiaSearchOpen(open);
+                }}
+            >
+                <DialogContent
+                    className="max-w-md rounded-2xl bg-white p-6"
+                    showCloseButton={!isSearchingGuia}
+                    onCloseAutoFocus={(event) => {
+                        event.preventDefault();
+                        manifiestoInputRef.current?.focus();
+                    }}
+                >
+                    <DialogTitle className="text-base font-bold text-slate-900">
+                        Buscar manifiesto por guía
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-slate-500">
+                        Ingrese el número de guía y presione Enter.
+                    </DialogDescription>
+                    <form
+                        onSubmit={(event) => {
+                            event.preventDefault();
+                            if (!isSearchingGuia) void handleBuscarPorGuia();
+                        }}
+                        className="space-y-3"
+                    >
+                        <Label htmlFor="buscar-guia-manifiesto" className="text-xs font-bold uppercase text-slate-700">
+                            Número de guía
+                        </Label>
+                        <Input
+                            id="buscar-guia-manifiesto"
+                            inputMode="numeric"
+                            value={guiaBusqueda}
+                            onChange={(event) => setGuiaBusqueda(event.target.value.replace(/\D/g, ""))}
+                            placeholder="Ingrese N° de guía"
+                            disabled={isSearchingGuia}
+                            className="rounded-xl border-zinc-200 bg-white text-sm"
+                        />
+                        {isSearchingGuia && <p role="status" className="text-xs text-slate-500">Buscando guía y manifiesto...</p>}
+                    </form>
+                </DialogContent>
+            </Dialog>
         </Dialog>
     );
 }

@@ -2,13 +2,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { getAllDespacho } from "../services/despacho.service";
 import type { DespachoResponseDetail } from "../types/despacho.type";
 
-const getTodayRange = () => {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-  const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
-  return { start, end };
-};
-
 export const useDespachoTable = () => {
   const [despachos, setDespachos] = useState<DespachoResponseDetail[]>([]);
   const [loading, setLoading] = useState(false);
@@ -26,8 +19,8 @@ export const useDespachoTable = () => {
       setError(null);
       try {
         const data = await getAllDespacho(
-          new Date(fechaInicial),
-          new Date(fechaFinal),
+          new Date(`${fechaInicial}T00:00:00`),
+          new Date(`${fechaFinal}T23:59:59.999`),
           agente ? Number(agente) : 0,
           estado
         );
@@ -48,13 +41,8 @@ export const useDespachoTable = () => {
     if (hasLoaded.current) return;
     hasLoaded.current = true;
 
-    const { start, end } = getTodayRange();
-    fetchDespachos(
-      start.toISOString().split("T")[0],
-      end.toISOString().split("T")[0],
-      "",
-      ""
-    );
+    const today = new Date().toISOString().split("T")[0];
+    fetchDespachos(today, today, "", "");
   }, [fetchDespachos]);
 
   const loadDespachos = useCallback(
@@ -76,4 +64,3 @@ export const useDespachoTable = () => {
     loadDespachos,
   };
 };
-

@@ -5,7 +5,7 @@ import { getAll as getCenterCosts } from "@/modules/centrocosto/services/centerc
 import type { CentroCostoData } from "@/modules/centrocosto/types/centercost.type";
 import { getOrden, saveOrden } from "../services/order.service";
 import { saveGuia } from "@/modules/guia/services/guia.service";
-import type { Guia } from "@/modules/guia/types/guia.type";
+import type { DocumentoAdjunto, Guia } from "@/modules/guia/types/guia.type";
 import { findByCode as findUbigeoByCode } from "@/modules/ubigeo/services/ubigeo.service";
 import type { GetOrdenResponseDetail } from "../types/order.type";
 import { getDestinatario } from "@/modules/destinatario/services/destinatario.service";
@@ -16,6 +16,7 @@ import { getAll as getTipoEnvios } from "@/modules/tipoenvio/services/tipoenvio.
 import type { getTipoEnvioResponseDetail } from "@/modules/tipoenvio/types/tipoenvio.type";
 
 export const useOrdenForm = (onSaved?: () => void) => {
+  const [documentos, setDocumentos] = useState<(DocumentoAdjunto & { id: number })[]>([]);
   // N° Orden
   const [numeroOrden, setNumeroOrden] = useState("");
   const [isSearchingOrden, setIsSearchingOrden] = useState(false);
@@ -253,7 +254,7 @@ export const useOrdenForm = (onSaved?: () => void) => {
     cc.descripcion.toLowerCase().includes(centerCostSearch.toLowerCase())
   );
 
-  const handleSelectCustomer = (codigo: string, descripcion: string) => {
+  const handleSelectCustomer = (codigo: string, descripcion: string, focusNext = true) => {
     setSelectedCustomer(codigo);
     setSelectedCustomerLabel(descripcion);
     setCustomerSearch("");
@@ -261,7 +262,9 @@ export const useOrdenForm = (onSaved?: () => void) => {
     // Resetear centro de costo al cambiar cliente
     setSelectedCenterCost("");
     setSelectedCenterCostLabel("");
-    setTimeout(() => centerCostRef.current?.focus(), 50);
+    if (focusNext) {
+      setTimeout(() => centerCostRef.current?.focus(), 50);
+    }
   };
 
   const handleSelectCenterCost = (codigo: string, descripcion: string) => {
@@ -309,8 +312,10 @@ export const useOrdenForm = (onSaved?: () => void) => {
           userCreated: '',
           customer: selectedCustomer,
           ccosto: selectedCenterCost,
+          docadjuntos: documentos.map(({ numero, tipo }) => ({ numero, tipo })),
         };
         await saveGuia(guia);
+        setDocumentos([]);
         // Incrementar correlativo y limpiar campos de guía para la siguiente
         setCorrelativo(String(Number(correlativo) + 1));
         setIdDestinatario(0);
@@ -358,9 +363,11 @@ export const useOrdenForm = (onSaved?: () => void) => {
               observaciones,
               estado: 'PD',
               digitalizado: false,
+              docadjuntos: documentos.map(({ numero, tipo }) => ({ numero, tipo })),
             },
           ],
         });
+        setDocumentos([]);
         // Limpiar todo y volver al foco de N° Orden
         setNumeroOrden("");
         setIsOrdenFound(false);
@@ -397,7 +404,7 @@ export const useOrdenForm = (onSaved?: () => void) => {
     } finally {
       setIsSaving(false);
     }
-  }, [isOrdenFound, numeroOrden, selectedCustomer, selectedCenterCost, selectedOrigen, selectedDestino, fecha, correlativo, ordenId, empresa, idDestinatario, destinatario, direccion, peso, bultos, unidades, observaciones, selectedTipoEnvio, selectedContenido, onSaved]);
+  }, [isOrdenFound, numeroOrden, selectedCustomer, selectedCenterCost, selectedOrigen, selectedDestino, fecha, correlativo, ordenId, empresa, idDestinatario, destinatario, direccion, peso, bultos, unidades, observaciones, selectedTipoEnvio, selectedContenido, documentos, onSaved]);
 
   // Buscar orden por número
   const handleOrdenSearch = useCallback(async () => {
@@ -444,7 +451,7 @@ export const useOrdenForm = (onSaved?: () => void) => {
     // Cliente
     const cliente = customers.find((c) => c.codigo === found.customer);
     if (cliente) {
-      handleSelectCustomer(cliente.codigo, cliente.descripcion);
+      handleSelectCustomer(cliente.codigo, cliente.descripcion, false);
     }
 
     // Centro de costo
@@ -482,9 +489,8 @@ export const useOrdenForm = (onSaved?: () => void) => {
     // UUID de la orden encontrada
     setOrdenId(found.id);
 
-    // Marcar orden encontrada y enfocar destino
+    // Marcar orden encontrada
     setIsOrdenFound(true);
-    setTimeout(() => destinoButtonRef.current?.focus(), 50);
 
     // Fecha
     if (found.fecha_registro) {
@@ -494,6 +500,7 @@ export const useOrdenForm = (onSaved?: () => void) => {
   }, [pendingOrden, customers]);
 
   const resetForm = useCallback(() => {
+    setDocumentos([]);
     setNumeroOrden("");
     setIsSearchingOrden(false);
     setIsOrdenFound(false);
@@ -543,6 +550,8 @@ export const useOrdenForm = (onSaved?: () => void) => {
   }, []);
 
   return {
+    documentos,
+    setDocumentos,
     // N° Orden
     numeroOrden,
     setNumeroOrden,
