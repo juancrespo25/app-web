@@ -22,6 +22,11 @@ docker build --build-arg VITE_API_URL=http://localhost:4000/api --build-arg VITE
 Con Docker Compose, configure ambas variables en `.env` y ejecute
 `docker compose up --build` para reconstruir la imagen con las URL indicadas.
 
+Para el despliegue de GitHub Actions, configure `VITE_API_URL` y
+`VITE_OPERACIONES_API_URL` como secretos del repositorio. Aunque se almacenen
+como secretos en GitHub, sus valores quedan visibles en el código generado
+para el navegador y no deben contener credenciales.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

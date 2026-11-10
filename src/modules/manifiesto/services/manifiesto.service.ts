@@ -1,4 +1,5 @@
 import api from "../../../services/api.service";
+//url de operaciones
 import { OPERACIONES_API_URL } from "@/services/api-config";
 import type {
   getAllManifiestoResponse,

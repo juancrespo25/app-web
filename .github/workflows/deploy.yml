@@ -37,6 +37,7 @@ jobs:
           push: true
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL }}
+            VITE_OPERACIONES_API_URL=${{ secrets.VITE_OPERACIONES_API_URL }}
           tags: |
             ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.sha_short }}
             ${{ env.IMAGE_NAME }}:latest
@@ -60,6 +61,7 @@ jobs:
             # Generar/actualizar .env con la variable y el tag de la imagen a desplegar
             cat > .env <<EOF
             VITE_API_URL=${{ secrets.VITE_API_URL }}
+            VITE_OPERACIONES_API_URL=${{ secrets.VITE_OPERACIONES_API_URL }}
             IMAGE_TAG=${{ needs.build-and-push.outputs.image_tag }}
             EOF
 
@@ -68,7 +70,6 @@ jobs:
 
             # Limpieza de imágenes viejas sin usar (mantiene espacio libre)
             docker image prune -f
-
 
 
 
