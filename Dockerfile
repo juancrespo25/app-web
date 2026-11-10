@@ -16,7 +16,9 @@ COPY . .
 # VITE_API_URL se "hornea" en el bundle en tiempo de build,
 # por eso se pasa como build-arg y no como variable de entorno en runtime.
 ARG VITE_API_URL
+ARG VITE_OPERACIONES_API_URL
 ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_OPERACIONES_API_URL=$VITE_OPERACIONES_API_URL
 
 RUN pnpm run build
 

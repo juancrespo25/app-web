@@ -1,4 +1,5 @@
 import api from "../../../services/api.service";
+import { OPERACIONES_API_URL } from "@/services/api-config";
 import type {
   getAllManifiestoResponse,
   getAllManifiestoResponseDetail,
@@ -20,7 +21,7 @@ export const getAllManifiesto = async (
   const token = localStorage.getItem("token");
   const response = await api.get<getAllManifiestoResponse>("/manifiestos", {
     headers: { Authorization: `Bearer ${token}` },
-    baseURL: "http://localhost:4006",
+    baseURL: OPERACIONES_API_URL,
     params: { fecha_inicial, fecha_final, codigo, estado, courier, zona },
   });
   return response.data.data;
@@ -38,7 +39,7 @@ export const saveManifiestoLocal = async (manifiesto: saveManifiesto) => {
     },
     {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006",
+      baseURL: OPERACIONES_API_URL,
     }
   );
   return response.data;
@@ -56,7 +57,7 @@ export const updateManifiestoLocal = async (manifiesto: UpdateManifiesto) => {
     },
     {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006",
+      baseURL: OPERACIONES_API_URL,
     }
   );
   return response.data;
@@ -67,7 +68,7 @@ export const getByIdManifiesto = async (manifiesto: number): Promise<getDetailMa
   try {
     const response = await api.get<getByidManifiestoResponse>(`/manifiestos/${manifiesto}`, {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006",
+      baseURL: OPERACIONES_API_URL,
     });
     return response.data.data ?? null;
   } catch {
@@ -80,7 +81,7 @@ export const validateGuiaManifiesto = async(guia: number): Promise<GuiaManifiest
     const response = await api.get<GuiaManifiestoValidateResponse>(`/validate/${guia}`,
     {
         headers: { Authorization: `Bearer ${token}`},
-        baseURL: "http://localhost:4006/guiamanifiestos",
+        baseURL: `${OPERACIONES_API_URL}/guiamanifiestos`,
     });
     return response.data;
 }

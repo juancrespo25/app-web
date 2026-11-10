@@ -1,4 +1,5 @@
 import api from "../../../services/api.service";
+import { OPERACIONES_API_URL } from "@/services/api-config";
 import type { Guia, ValidateGuia } from "../types/guia.type";
 
 export const saveGuia = async(guia: Guia) => {
@@ -12,7 +13,7 @@ export const saveGuia = async(guia: Guia) => {
         },
     {
         headers: { Authorization: `Bearer ${token}`},
-        baseURL: "http://localhost:4006/guias",
+        baseURL: `${OPERACIONES_API_URL}/guias`,
     });
     return response.data;
 }
@@ -22,7 +23,7 @@ export const validateGuia = async(guia: number): Promise<ValidateGuia> => {
     const response = await api.get<ValidateGuia>(`/validate/${guia}`,
     {
         headers: { Authorization: `Bearer ${token}`},
-        baseURL: "http://localhost:4006/guias",
+        baseURL: `${OPERACIONES_API_URL}/guias`,
     });
     return response.data;
 }

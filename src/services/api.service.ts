@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { getEnvVar } from '@/utils/env';
+import { API_URL } from './api-config';
 import { getToken, removeToken } from '@/utils/token';
 
 const api = axios.create({
   // Esto permite centralizar la URL de tu backend
-  baseURL: getEnvVar('VITE_API_URL') || 'http://localhost:4000/api',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },

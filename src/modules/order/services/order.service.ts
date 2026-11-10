@@ -1,4 +1,5 @@
 import api from "../../../services/api.service";
+import { OPERACIONES_API_URL } from "@/services/api-config";
 import type {
   GetAllOrdenResponse,
   GetAllOrdenResponseDetail,
@@ -14,7 +15,7 @@ export const getOrden = async (
   try {
     const response = await api.get<GetOrdenResponse>(`/${orden}`, {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006/ordenes",
+      baseURL: `${OPERACIONES_API_URL}/ordenes`,
     });
     return response.data.data ?? null;
   } catch {
@@ -28,7 +29,7 @@ export const getAllOrdenToday = async (): Promise<
   const token = localStorage.getItem("token");
   const response = await api.get<GetAllOrdenResponse>("/get/today", {
     headers: { Authorization: `Bearer ${token}` },
-    baseURL: "http://localhost:4006/ordenes", // Asegúrate de que esta URL sea correcta
+    baseURL: `${OPERACIONES_API_URL}/ordenes`,
   });
   return response.data.data;
 };
@@ -46,7 +47,7 @@ export const saveOrden = async (orden: OrdenSave) => {
     },
     {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006/ordenes",
+      baseURL: `${OPERACIONES_API_URL}/ordenes`,
     },
   );
   return response.data;

@@ -1,4 +1,5 @@
 import api from "../../../services/api.service";
+import { OPERACIONES_API_URL } from "@/services/api-config";
 import type {
   DespachoResponse,
   DespachoResponseDetail,
@@ -17,7 +18,7 @@ export const getAllDespacho = async (
   const token = localStorage.getItem("token");
   const response = await api.get<DespachoResponse>("/despacho", {
     headers: { Authorization: `Bearer ${token}` },
-    baseURL: "http://localhost:4006",
+    baseURL: OPERACIONES_API_URL,
     params: { fecha_inicial, fecha_final, agente, estado },
   });
   return response.data.data;
@@ -27,7 +28,7 @@ export const getByIdDespacho = async (despachoid: number): Promise<IGetByIdGuiaD
   const token = localStorage.getItem("token");
   const response = await api.get<IGetByIdGuiaDespachoResponse>("/despacho/search/"+despachoid, {
     headers: { Authorization: `Bearer ${token}` },
-    baseURL: "http://localhost:4006",
+    baseURL: OPERACIONES_API_URL,
   });
   return response.data;
 }
@@ -40,7 +41,7 @@ export const validateGuiaDespacho = async (
     "guiadespacho/validate/"+guia,
     {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006"
+      baseURL: OPERACIONES_API_URL
     },
   );
   return response.data;
@@ -58,7 +59,7 @@ export const SaveDespacho = async (despacho: ISaveDespacho) => {
     },
     {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006",
+      baseURL: OPERACIONES_API_URL,
     },
   );
   return response.data;
@@ -76,7 +77,7 @@ export const UpdateDespacho = async (despacho: IUpdateDespacho) => {
     },
     {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006",
+      baseURL: OPERACIONES_API_URL,
     },
   );
   return response.data;
@@ -95,7 +96,7 @@ export const UpdateStatusDespacho = async (despachoid: number, status: string) =
     },
     {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006",
+      baseURL: OPERACIONES_API_URL,
     },
   );
   return response.data;
@@ -114,7 +115,7 @@ export const ConfirmDespacho = async (despachoid: number, status: string) => {
     },
     {
       headers: { Authorization: `Bearer ${token}` },
-      baseURL: "http://localhost:4006",
+      baseURL: OPERACIONES_API_URL,
     },
   );
   return response.data;

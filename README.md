@@ -1,5 +1,27 @@
 # React + TypeScript + Vite
 
+## Configuración de las API
+
+Copie `.env.example` a `.env` y ajuste las URL según el entorno:
+
+- `VITE_API_URL`: API principal (por ejemplo, `http://localhost:4000/api`).
+- `VITE_OPERACIONES_API_URL`: API de operaciones (por ejemplo, `http://localhost:4006`).
+
+Las URL son accesibles desde el navegador, por lo que deben ser alcanzables
+desde el equipo del usuario. Reinicie Vite después de cambiar `.env`. No incluya
+credenciales ni secretos en variables `VITE_`.
+
+En Docker, estas variables se incorporan al compilar la imagen. Páselas
+como argumentos de build; cambiarlas en el entorno de un contenedor existente
+no modifica la aplicación ya compilada:
+
+```sh
+docker build --build-arg VITE_API_URL=http://localhost:4000/api --build-arg VITE_OPERACIONES_API_URL=http://localhost:4006 -t app-web .
+```
+
+Con Docker Compose, configure ambas variables en `.env` y ejecute
+`docker compose up --build` para reconstruir la imagen con las URL indicadas.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

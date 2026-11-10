@@ -1,4 +1,5 @@
 import api from "../../../services/api.service";
+import { OPERACIONES_API_URL } from "@/services/api-config";
 import type { getDestinatarioResponse, GetDestinatarioResponseDetail } from "../types/destinatario.type";
 
 const isDestinatario = (value: unknown): value is Partial<GetDestinatarioResponseDetail> => {
@@ -35,7 +36,7 @@ export const getDestinatario = async (nombre: string, customer: string, ccosto: 
                 ubigeo
             }, {
                 headers: { Authorization: `Bearer ${token}` },
-                baseURL: "http://localhost:4006",
+                baseURL: OPERACIONES_API_URL,
             }
         );
         return normalizeDestinatarioData(response.data);
