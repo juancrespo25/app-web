@@ -129,7 +129,6 @@ export default function ConsultaOrdenPage() {
             <TableRow className="border-b border-slate-200/70 bg-slate-950 hover:bg-slate-950">
               <TableHead className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">Guía</TableHead>
               <TableHead className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">Destinatario</TableHead>
-              <TableHead className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">Dirección</TableHead>
               <TableHead className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">Destino</TableHead>
               <TableHead className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">Estado</TableHead>
               <TableHead className="px-6 py-4 text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-200">Ver guía</TableHead>
@@ -140,7 +139,6 @@ export default function ConsultaOrdenPage() {
             <TableRow key={envio.id_guia} className="bg-white">
               <TableCell className="px-6 py-5">{envio.id_guia}</TableCell>
               <TableCell className="px-6 py-5">{envio.nombres}</TableCell>
-              <TableCell className="px-6 py-5">{envio.direccion}</TableCell>
               <TableCell className="px-6 py-5">{envio.destino}</TableCell>
               <TableCell className="px-6 py-5">{envio.estado}</TableCell>
               <TableCell className="px-6 py-5 text-center">
