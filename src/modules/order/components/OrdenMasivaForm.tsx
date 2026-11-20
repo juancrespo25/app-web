@@ -121,7 +121,17 @@ export default function OrdenMasivaForm({ isOpen, onClose, onSaved }: OrdenMasiv
             cols.push(current);
             if (cols.some((c) => c.trim() !== "")) rows.push(cols);
         }
-        return rows;
+        return rows.map((row) => {
+            const tipoDocumento = (row[13] ?? "").trim();
+            if (!tipoDocumento) return row;
+
+            const valorNumerico = Number(tipoDocumento.replace(",", "."));
+            if (!Number.isFinite(valorNumerico)) return row;
+
+            const normalizedRow = [...row];
+            normalizedRow[13] = String(Math.round(valorNumerico));
+            return normalizedRow;
+        });
     };
 
     const handleFileChange = (e: { target: { files: FileList | null } }) => {
