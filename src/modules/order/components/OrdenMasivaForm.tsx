@@ -88,6 +88,22 @@ export default function OrdenMasivaForm({ isOpen, onClose, onSaved }: OrdenMasiv
     const parseCSV = (text: string): string[][] => {
         const rows: string[][] = [];
         const lines = text.split(/\r?\n/).filter((l) => l.trim() !== "");
+        const firstLine = lines[0] ?? "";
+        let delimiter = ";";
+        let inHeaderQuotes = false;
+        let commaCount = 0;
+        let semicolonCount = 0;
+        for (const char of firstLine) {
+            if (char === '"') {
+                inHeaderQuotes = !inHeaderQuotes;
+            } else if (!inHeaderQuotes && char === ",") {
+                commaCount++;
+            } else if (!inHeaderQuotes && char === ";") {
+                semicolonCount++;
+            }
+        }
+        if (commaCount > semicolonCount) delimiter = ",";
+
         for (let i = 0; i < lines.length; i++) {
             const cols: string[] = [];
             let current = "";
@@ -95,7 +111,7 @@ export default function OrdenMasivaForm({ isOpen, onClose, onSaved }: OrdenMasiv
             for (const char of lines[i]) {
                 if (char === '"') {
                     inQuotes = !inQuotes;
-                } else if (char === ";" && !inQuotes) {
+                } else if (char === delimiter && !inQuotes) {
                     cols.push(current);
                     current = "";
                 } else {
