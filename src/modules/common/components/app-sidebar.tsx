@@ -16,6 +16,7 @@ import {
     Users,
     Truck,
     ClipboardList,
+    Printer,
     Settings,
     ChevronDown,
 } from "lucide-react"
@@ -28,8 +29,8 @@ const navItems = [
         label: "ATENCION AL CLIENTE",
         items: [
             { title: "Envios por cliente", url: "/envios", icon: Truck },
-            { title: "Consulta de Orden", url: "/paquetes", icon: Package },
-            { title: "Devolucion de cargos", url: "/paquetes", icon: Package },
+            { title: "Consulta de Orden", url: "/consulta-orden", icon: Package },
+            { title: "Devolucion de cargos", url: "/devolucion-cargos", icon: Package },
         ],
     },
     {
@@ -61,8 +62,7 @@ const navItems = [
     {
         label: "IMPRESIONES",
         items: [
-            { title: "Imprimir Guias", url: "/ordenes", icon: Users },
-            { title: "Imprimir Etiquetas", url: "/ordenes", icon: Users },
+            { title: "Impresiones", url: "/impresiones", icon: Printer },
         ],
     },
     {

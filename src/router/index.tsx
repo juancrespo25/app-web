@@ -12,6 +12,10 @@ import DescargaPage from "@/modules/descargas/pages/DescargaPage"
 import ConfirmacionPage from "@/modules/confirmaciones/pages/ConfirmacionPage"
 import { ProtectedRoute } from "./ProtectedRoute"
 import ManifiestoPage from "@/modules/manifiesto/pages/ManifiestoPage";
+import ImpresionesPage from "@/modules/impresiones/pages/ImpresionesPage";
+import DevolucionCargos from "@/modules/devolucioncargos/page/DevolucionCargos";
+import ConsultaOrdenPage from "@/modules/consultaorden/page/ConsultaOrdenPage";
+import EnviosPorCliente from "@/modules/enviosporcliente/pages/EnviosPorCliente";
 
 
 export const router = createBrowserRouter([
@@ -36,6 +40,10 @@ export const router = createBrowserRouter([
       { path: "despacho", element: <DespachoPage /> },
       { path: "descargas", element: <DescargaPage /> },
       { path: "confirmaciones", element: <ConfirmacionPage /> },
+      { path: "impresiones", element: <ImpresionesPage /> },
+      { path: "devolucion-cargos", element: <DevolucionCargos /> },
+      { path: "consulta-orden", element: <ConsultaOrdenPage /> },
+      { path: "envios", element: <EnviosPorCliente /> },
     ],
   },
 
